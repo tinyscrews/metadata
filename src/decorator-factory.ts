@@ -44,7 +44,7 @@ export class DecoratorFactory<T, M extends T | MetadataMap<T> | MetadataMap<T[]>
    * By default, this method merges base metadata into the spec if `allowInheritance` is set to `true`.
    * To customize the behavior, this method can be overridden by sub classes.
    *
-   * @param inheritedMetadata - Metadata from base classes for the member
+   * @param inheritedMetadata Metadata from base classes for the member
    */
   protected inherit(inheritedMetadata: T | undefined | null): T {
     if (!this.allowInheritance()) return this.spec;
@@ -74,13 +74,8 @@ export class DecoratorFactory<T, M extends T | MetadataMap<T> | MetadataMap<T[]>
    *
    * @param spec - Metadata spec
    */
-  protected getTarget(spec: T) {
-    if (typeof spec === 'object' && spec != null) {
-      const specWithTarget = spec as { [name: string]: any };
-      return specWithTarget[DecoratorFactory.TARGET];
-    } else {
-      return undefined;
-    }
+  protected getTarget(spec: T): Object | undefined {
+    return (typeof spec === 'object' && spec != null) ? (spec as Record<string, any>)[DecoratorFactory.TARGET] : undefined;
   }
 
   /**
@@ -133,6 +128,7 @@ export class DecoratorFactory<T, M extends T | MetadataMap<T> | MetadataMap<T[]>
 
   /**
    * Create a decorator function
+   *
    * @param key Metadata key
    * @param spec Metadata object from the decorator function
    * @param options Options for the decorator
@@ -163,9 +159,10 @@ export class MethodDecoratorFactory<T> extends DecoratorFactory<T, MetadataMap<T
 
   /**
    * Create a method decorator function
-   * @param key - Metadata key
-   * @param spec - Metadata object from the decorator function
-   * @param options - Options for the decorator
+   *
+   * @param key Metadata key
+   * @param spec Metadata object from the decorator function
+   * @param options Options for the decorator
    */
   static createDecorator<S>(key: MetadataKey<S, MethodDecorator>, spec: S, options?: DecoratorOptions) {
     return super._createDecorator<S, MetadataMap<S>, MethodDecorator>(key, spec, options);
