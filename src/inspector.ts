@@ -16,17 +16,28 @@ export interface InspectionOptions {
 }
 
 export class MetadataInspector {
+
   /**
-   * Get the metadata associated with the given key for a given method of the
-   * target class or prototype
+   * Get the metadata associated with the given key for all methods of the target class or prototype
+   *
+   * @param key Metadata key
+   * @param target Class for static methods or prototype for instance methods
+   * @param options Options for inspection
+   */
+  public static getAllMethodMetadata<T>(key: MetadataKey<T, MethodDecorator>, target: Object, options?: InspectionOptions): MetadataMap<T> | undefined {
+    return options?.ownMetadataOnly ? Reflection.getOwnMetadata(key.toString(), target) : Reflection.getMetadata(key.toString(), target);
+  }
+
+  /**
+   * Get the metadata associated with the given key for a given method of the target class or prototype
+   *
    * @param key - Metadata key
    * @param target - Class for static methods or prototype for instance methods
    * @param methodName - Method name. If not present, default to '' to use
    * the constructor
    * @param options - Options for inspection
    */
-  static getMethodMetadata<T>(key: MetadataKey<T, MethodDecorator>, target: Object, methodName?: string, options?: InspectionOptions): T | undefined {
-    const meta: MetadataMap<T> | undefined = options?.ownMetadataOnly ? Reflection.getOwnMetadata(key.toString(), target) : Reflection.getMetadata(key.toString(), target);
-    return meta?.[methodName ?? ''];
+  public static getMethodMetadata<T>(key: MetadataKey<T, MethodDecorator>, target: Object, methodName?: string, options?: InspectionOptions): T | undefined {
+    return MetadataInspector.getAllMethodMetadata(key, target, options)?.[methodName ?? ''];
   }
 }
