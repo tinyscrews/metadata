@@ -1,16 +1,22 @@
 {
   "name": "@tinyscrews/metadata",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.1",
+  "description": "Utilities for TypeScript decorators, define and inspect metadata",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "prepublishonly": "npm i --package-lock-only && npm ci && npm run clean && npm run build && npm run test",
+    "clean": "npx rimraf lib *.tsbuildinfo",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": "github:tinyscrews/metadata",
+  "bugs": {
+    "url": "https://github.com/tinyscrews/metadata/issues"
+  },
   "dependencies": {
     "@abraham/reflection": "^0.8.0"
   },
