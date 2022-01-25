@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepublishonly": "npm i --package-lock-only && npm ci && npm run clean && npm run build && npm run test",
+    "prepublishOnly": "npm i --package-lock-only && npm ci && npm run clean && npm run build && npm run test",
     "clean": "npx rimraf lib *.tsbuildinfo",
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
