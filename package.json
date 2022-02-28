@@ -1,6 +1,6 @@
 {
   "name": "@tinyscrews/metadata",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Utilities for TypeScript decorators, define and inspect metadata",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -18,7 +18,7 @@
     "url": "https://github.com/tinyscrews/metadata/issues"
   },
   "dependencies": {
-    "@abraham/reflection": "^0.8.0"
+    "@abraham/reflection": "^0.9.1"
   },
   "devDependencies": {
     "typescript": "^4.5.5"

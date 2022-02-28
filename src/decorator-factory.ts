@@ -56,6 +56,22 @@ export class DecoratorFactory<T, M extends T | MetadataMap<T> | MetadataMap<T[]>
   }
 
   /**
+   * Get the number of parameters for a given constructor or method
+   * @param target - Class or the prototype
+   * @param member - Method name
+   */
+  protected static getNumberOfParameters(target: Object, member?: string) {
+    if (typeof target === 'function' && !member) {
+      // constructor
+      return target.length;
+    } else {
+      // target[member] is a function
+      const method = (<{ [methodName: string]: Function }>target)[member!];
+      return method.length;
+    }
+  }
+
+  /**
    * Set a reference to the target class or prototype for a given spec if it's an object
    *
    * @param spec - Metadata spec
@@ -166,5 +182,58 @@ export class MethodDecoratorFactory<T> extends DecoratorFactory<T, MetadataMap<T
    */
   static createDecorator<S>(key: MetadataKey<S, MethodDecorator>, spec: S, options?: DecoratorOptions) {
     return super._createDecorator<S, MetadataMap<S>, MethodDecorator>(key, spec, options);
+  }
+}
+
+/**
+ * Factory for parameter decorators
+ */
+export class ParameterDecoratorFactory<T> extends DecoratorFactory<T, MetadataMap<T[]>, ParameterDecorator> {
+
+  private getOrInitMetadata(meta: MetadataMap<T[]>, target: Object, methodName?: string) {
+    const method = methodName ? methodName : '';
+    let methodMeta = meta[method];
+    if (methodMeta == null) {
+      // Initialize the method metadata
+      methodMeta = new Array(DecoratorFactory.getNumberOfParameters(target, methodName)).fill(undefined);
+      meta[method] = methodMeta;
+    }
+    return methodMeta;
+  }
+
+  protected mergeWithInherited(inheritedMetadata: MetadataMap<T[]>, target: Object, methodName?: string, parameterIndex?: TypedPropertyDescriptor<any> | number) {
+    inheritedMetadata = inheritedMetadata || {};
+    const methodMeta = this.getOrInitMetadata(inheritedMetadata, target, methodName);
+    const index = parameterIndex as number;
+    methodMeta[index] = this.withTarget(<T>this.inherit(methodMeta[index]), target);
+    return inheritedMetadata;
+  }
+
+  protected mergeWithOwn(ownMetadata: MetadataMap<T[]>, target: Object, methodName?: string, parameterIndex?: TypedPropertyDescriptor<any> | number) {
+    ownMetadata = ownMetadata || {};
+    // Find the method metadata
+    const methodMeta = this.getOrInitMetadata(ownMetadata, target, methodName);
+    const index = parameterIndex as number;
+    if (this.getTarget(methodMeta[index]) === target) {
+      throw new DuplicateDecorationError(this.decoratorName, target, methodName, parameterIndex);
+    }
+    // Set the parameter metadata
+    methodMeta[index] = this.withTarget(<T>this.inherit(methodMeta[index]), target);
+    return ownMetadata;
+  }
+
+  create(): ParameterDecorator {
+    return (target: Object, methodName: string | symbol, parameterIndex: number) => this.decorate(target, methodName, parameterIndex);
+  }
+
+  /**
+   * Create a parameter decorator function
+   *
+   * @param key - Metadata key
+   * @param spec - Metadata object from the decorator function
+   * @param options - Options for the decorator
+   */
+  static createDecorator<S>(key: MetadataKey<S, ParameterDecorator>, spec: S, options?: DecoratorOptions) {
+    return super._createDecorator<S, MetadataMap<S[]>, ParameterDecorator>(key, spec, options);
   }
 }
