@@ -40,4 +40,31 @@ export class MetadataInspector {
   public static getMethodMetadata<T>(key: MetadataKey<T, MethodDecorator>, target: Object, methodName?: string, options?: InspectionOptions): T | undefined {
     return MetadataInspector.getAllMethodMetadata(key, target, options)?.[methodName ?? ''];
   }
+
+  /**
+   * Get the metadata associated with the given key for all parameters of a given method
+   *
+   * @param key - Metadata key
+   * @param target - Class for static methods or prototype for instance methods
+   * @param methodName - Method name. If not present, default to '' to use the constructor
+   * @param options - Options for inspection
+   */
+  public static getAllParameterMetadata<T>(key: MetadataKey<T, ParameterDecorator>, target: Object, methodName?: string, options?: InspectionOptions): T[] | undefined {
+    methodName = methodName ?? '';
+    const meta: MetadataMap<T[]> | undefined = options?.ownMetadataOnly ? Reflection.getOwnMetadata(key.toString(), target) : Reflection.getMetadata(key.toString(), target);
+    return meta?.[methodName];
+  }
+
+  /**
+   * Get the metadata associated with the given key for a parameter of a given method by index
+   *
+   * @param key - Metadata key
+   * @param target - Class for static methods or prototype for instance methods
+   * @param methodName - Method name. If not present, default to '' to use the constructor
+   * @param index - Index of the parameter, starting with 0
+   * @param options - Options for inspection
+   */
+  public static getParameterMetadata<T>(key: MetadataKey<T, ParameterDecorator>, target: Object, methodName: string, index: number, options?: InspectionOptions): T | undefined {
+    return MetadataInspector.getAllParameterMetadata(key, target, methodName, options)?.[index];
+  }
 }
