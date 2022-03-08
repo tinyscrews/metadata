@@ -1,6 +1,6 @@
 {
   "name": "@tinyscrews/metadata",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Utilities for TypeScript decorators, define and inspect metadata",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
