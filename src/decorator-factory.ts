@@ -168,3 +168,29 @@ export class MethodDecoratorFactory<T> extends DecoratorFactory<T, MetadataMap<T
     return super._createDecorator<S, MetadataMap<S>, MethodDecorator>(key, spec, options);
   }
 }
+
+export class MethodMultiDecoratorFactory<T> extends MethodDecoratorFactory<T[]> {
+
+  protected mergeWithInherited(inheritedMetadata: MetadataMap<T[]>, target: Object, methodName?: string) {
+    inheritedMetadata ||= {};
+    inheritedMetadata[methodName!] = this._mergeArray(inheritedMetadata[methodName!], this.withTarget(this.spec, target));
+    return inheritedMetadata;
+  }
+
+  protected mergeWithOwn(ownMetadata: MetadataMap<T[]>, target: Object, methodName?: string, methodDescriptor?: TypedPropertyDescriptor<any> | number) {
+    ownMetadata ||= {};
+    ownMetadata[methodName!] = this._mergeArray(ownMetadata[methodName!], this.withTarget(this.spec, target));
+    return ownMetadata;
+  }
+
+  private _mergeArray(result: T[], methodMeta: T | T[]): T[] {
+    if (!result) {
+      result = (Array.isArray(methodMeta)) ? methodMeta : [methodMeta];
+    } else if (Array.isArray(methodMeta)) {
+      result.push(...methodMeta);
+    } else {
+      result.push(methodMeta);
+    }
+    return result;
+  }
+}
